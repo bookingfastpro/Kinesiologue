@@ -4,6 +4,9 @@
  */
 
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
+import About from "./pages/About";
+import Blog from "./pages/Blog";
 import { 
   Leaf, 
   MapPin, 
@@ -14,7 +17,7 @@ import {
   Heart, 
   Sparkles, 
   Instagram, 
-  Facebook, 
+  Search, 
   MessageCircle,
   ChevronRight,
   Menu,
@@ -25,9 +28,29 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
+const ScrollToTop = () => {
+  const { pathname, hash } = useLocation();
+
+  useEffect(() => {
+    if (!hash) {
+      window.scrollTo(0, 0);
+    } else {
+      const id = hash.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [pathname, hash]);
+
+  return null;
+};
+
 const Navbar = ({ onOpenBooking }: { onOpenBooking: () => void }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const isHome = location.pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -46,6 +69,15 @@ const Navbar = ({ onOpenBooking }: { onOpenBooking: () => void }) => {
     };
   }, [isMobileMenuOpen]);
 
+  const navItems = [
+    { name: "Présentation", path: "/#presentation" },
+    { name: "À Propos", path: "/a-propos" },
+    { name: "Le Journal", path: "/blog" },
+    { name: "Prestations", path: "/#prestations" },
+    { name: "Bénéfices", path: "/#bénéfices" },
+    { name: "Contact", path: "/#contact" }
+  ];
+
   return (
     <>
       <nav 
@@ -54,24 +86,35 @@ const Navbar = ({ onOpenBooking }: { onOpenBooking: () => void }) => {
         }`}
       >
         <div className="max-w-[1800px] mx-auto px-8 md:px-16 flex justify-between items-center">
-          <a href="#home" className="group">
+          <Link to="/" className="group">
             <div className="flex flex-col">
-              <span className="font-serif text-3xl tracking-tighter text-deep-brown group-hover:italic transition-all duration-500">Ines Mallaroni</span>
+              <span className="font-serif text-3xl tracking-tighter text-deep-brown group-hover:italic transition-all duration-500">Inès Mallaroni</span>
               <span className="micro-label !mb-0 !text-[8px]">Kinésiologue • Porto-Vecchio</span>
             </div>
-          </a>
+          </Link>
 
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center space-x-12">
-            {["Présentation", "Prestations", "Bénéfices", "Contact"].map((item) => (
-              <a 
-                key={item} 
-                href={`#${item.toLowerCase()}`}
-                className="text-[11px] uppercase tracking-[0.3em] text-deep-brown/60 hover:text-deep-brown transition-all duration-300 relative group"
-              >
-                {item}
-                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-deep-brown transition-all duration-500 group-hover:w-full"></span>
-              </a>
+            {navItems.map((item) => (
+              item.path.startsWith("/#") ? (
+                <a 
+                  key={item.name} 
+                  href={item.path}
+                  className="text-[11px] uppercase tracking-[0.3em] text-deep-brown/60 hover:text-deep-brown transition-all duration-300 relative group"
+                >
+                  {item.name}
+                  <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-deep-brown transition-all duration-500 group-hover:w-full"></span>
+                </a>
+              ) : (
+                <Link 
+                  key={item.name} 
+                  to={item.path}
+                  className="text-[11px] uppercase tracking-[0.3em] text-deep-brown/60 hover:text-deep-brown transition-all duration-300 relative group"
+                >
+                  {item.name}
+                  <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-deep-brown transition-all duration-500 group-hover:w-full"></span>
+                </Link>
+              )
             ))}
             <button onClick={onOpenBooking} className="btn-luxury">
               Réserver
@@ -103,18 +146,31 @@ const Navbar = ({ onOpenBooking }: { onOpenBooking: () => void }) => {
               <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 rounded-full hover:bg-deep-brown/5 transition-colors"><X size={32} /></button>
             </div>
             <div className="flex flex-col space-y-8">
-              {["Accueil", "Présentation", "Prestations", "Bénéfices", "Contact"].map((item, i) => (
-                <motion.a 
+              {navItems.map((item, i) => (
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  key={item} 
-                  href={`#${item.toLowerCase()}`}
-                  className="text-5xl font-serif text-deep-brown"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  key={item.name}
                 >
-                  {item}
-                </motion.a>
+                  {item.path.startsWith("/#") ? (
+                    <a 
+                      href={item.path}
+                      className="text-5xl font-serif text-deep-brown"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item.name}
+                    </a>
+                  ) : (
+                    <Link 
+                      to={item.path}
+                      className="text-5xl font-serif text-deep-brown"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  )}
+                </motion.div>
               ))}
               <motion.button
                 initial={{ opacity: 0, y: 20 }}
@@ -154,14 +210,14 @@ const Hero = ({ onOpenBooking }: { onOpenBooking: () => void }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            <span className="micro-label">Kinésiologie & Bien-être Holistique</span>
+            <span className="micro-label">Kinésiologie & Bien-être</span>
             <h1 className="section-title">
               Retrouvez votre <br />
               <span className="italic text-terracotta">équilibre</span> intérieur <br />
               en Corse-du-Sud
             </h1>
             <p className="text-xl md:text-2xl text-deep-brown/70 mb-12 max-w-xl font-light leading-relaxed">
-              Ines Mallaroni vous accompagne à Porto-Vecchio pour libérer vos blocages et restaurer votre vitalité naturelle.
+              Je vous accompagne afin de libérer vos blocages et retrouver votre équilibre.
             </p>
             <div className="flex flex-wrap gap-8 items-center">
               <button onClick={onOpenBooking} className="btn-luxury group flex items-center gap-4">
@@ -268,6 +324,12 @@ const Presentation = () => {
                   <span className="text-4xl font-serif text-terracotta block mb-2">Corse</span>
                   <span className="text-xs uppercase tracking-widest font-bold opacity-60">Porto-Vecchio</span>
                 </div>
+              </div>
+              <div className="pt-10">
+                <Link to="/a-propos" className="group flex items-center gap-4 text-deep-brown hover:text-terracotta transition-colors">
+                  <span className="text-sm uppercase tracking-[0.2em] font-bold">En savoir plus sur mon parcours</span>
+                  <ArrowRight className="group-hover:translate-x-2 transition-transform" size={18} />
+                </Link>
               </div>
             </div>
           </motion.div>
@@ -393,23 +455,23 @@ const Services = ({ onOpenBooking }: { onOpenBooking: () => void }) => {
     {
       id: "01",
       title: "Adultes",
-      subtitle: "Équilibre & Performance",
-      desc: "Un accompagnement personnalisé pour libérer vos potentiels et retrouver une harmonie globale dans votre vie quotidienne et professionnelle.",
+      subtitle: "Libération & équilibre",
+      desc: "Un accompagnement personnalisé pour libérer vos blocages et retrouver une harmonie globale dans votre vie quotidienne et professionnelle.",
       details: [
-        "Gestion du stress et de l'anxiété",
+        "Gestion du stress, de l’anxiété et des émotions",
         "Amélioration de la confiance en soi",
-        "Libération des blocages émotionnels",
-        "Optimisation de la vitalité physique",
-        "Accompagnement au changement"
+        "Accompagnement lors de périodes de transition (burn-out, deuil, séparation)",
+        "Douleurs physiques chroniques sans cause médicale identifiée",
+        "Amélioration du sommeil et de la vitalité"
       ],
-      price: "60€",
-      duration: "Séance d'une heure",
+      price: "70€",
+      duration: "Séance de 1h",
       img: "/images/Acupuncture — Living River.jpg"
     },
     {
       id: "02",
-      title: "Enfants",
-      subtitle: "Douceur & Apprentissage",
+      title: "Enfants (jusqu’à 12 ans)",
+      subtitle: "épanouissement & apprentissage",
       desc: "Une approche ludique et bienveillante pour aider les plus jeunes à mieux comprendre leurs émotions et surmonter leurs difficultés.",
       details: [
         "Troubles de l'apprentissage et concentration",
@@ -418,8 +480,8 @@ const Services = ({ onOpenBooking }: { onOpenBooking: () => void }) => {
         "Hypersensibilité et émotivité",
         "Confiance en soi et socialisation"
       ],
-      price: "50€",
-      duration: "Séance de 45 min à 1h",
+      price: "55€",
+      duration: "Séance de 45 min",
       img: "/images/Endobelly.jpg"
     }
   ];
@@ -429,7 +491,7 @@ const Services = ({ onOpenBooking }: { onOpenBooking: () => void }) => {
       <div className="max-w-[1800px] mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-8">
           <div className="max-w-2xl">
-            <span className="micro-label">Nos Prestations</span>
+            <span className="micro-label">Mes Prestations</span>
             <h2 className="section-title !mb-0">Des séances <span className="italic">sur-mesure</span> pour tous.</h2>
           </div>
           <p className="text-xl text-deep-brown/60 max-w-sm font-light">
@@ -513,7 +575,7 @@ const Benefits = () => {
     <section id="bénéfices" className="py-32 px-8 md:px-16 bg-deep-brown text-nude-50 overflow-hidden relative">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         <div>
-          <span className="micro-label !text-accent">Pourquoi nous choisir ?</span>
+          <span className="micro-label !text-accent">pourquoi choisir la kinésiologie ?</span>
           <h2 className="section-title !text-nude-50">Libérez votre <br /><span className="italic text-accent">potentiel</span> naturel.</h2>
           <p className="text-xl text-nude-50/60 mb-12 font-light leading-relaxed max-w-xl">
             La kinésiologie permet de lever les barrières invisibles qui vous empêchent d'avancer. À Porto-Vecchio, nous créons un espace sécurisé pour votre transformation.
@@ -550,7 +612,7 @@ const Benefits = () => {
             >
               <div className="text-center">
                 <span className="block text-4xl font-serif mb-1">100%</span>
-                <span className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-60">Naturel</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-60">personnalisée</span>
               </div>
               
               {/* Circular text or border decoration could go here if needed, but keeping it clean */}
@@ -578,7 +640,8 @@ const Contact = ({ onOpenBooking }: { onOpenBooking: () => void }) => {
             <div className="space-y-12">
               <div className="group cursor-pointer">
                 <span className="micro-label !mb-2 opacity-50">Où me trouver</span>
-                <p className="text-2xl font-serif group-hover:text-terracotta transition-colors">Centre de Bien-être, Porto-Vecchio</p>
+                <p className="text-2xl font-serif group-hover:text-terracotta transition-colors">41 rue Maréchal Juin (Immeuble Traiteur TORNERÓ)</p>
+                <p className="text-2xl font-serif group-hover:text-terracotta transition-colors">20137 Porto-Vecchio</p>
               </div>
               <div className="group cursor-pointer">
                 <span className="micro-label !mb-2 opacity-50">Me contacter</span>
@@ -587,9 +650,15 @@ const Contact = ({ onOpenBooking }: { onOpenBooking: () => void }) => {
               <div className="group cursor-pointer">
                 <span className="micro-label !mb-2 opacity-50">Réseaux</span>
                 <div className="flex gap-6 mt-4">
-                  <Instagram className="hover:text-terracotta transition-colors" />
-                  <Facebook className="hover:text-terracotta transition-colors" />
-                  <MessageCircle className="hover:text-terracotta transition-colors" />
+                  <a href="#" target="_blank" rel="noopener noreferrer">
+                    <Instagram className="hover:text-terracotta transition-colors" />
+                  </a>
+                  <a href="https://share.google/B5UulQr99RYjUFRgt" target="_blank" rel="noopener noreferrer">
+                    <Search className="hover:text-terracotta transition-colors" />
+                  </a>
+                  <a href="https://wa.me/33683571784" target="_blank" rel="noopener noreferrer">
+                    <MessageCircle className="hover:text-terracotta transition-colors" />
+                  </a>
                 </div>
               </div>
             </div>
@@ -631,8 +700,17 @@ const Footer = () => {
           </div>
           
           <div className="flex flex-wrap gap-12">
-            {["Instagram", "Facebook", "LinkedIn"].map(social => (
-              <a key={social} href="#" className="text-[10px] uppercase tracking-[0.3em] font-bold hover:text-terracotta transition-colors">{social}</a>
+            {[
+              { name: "À Propos", url: "/a-propos", isInternal: true },
+              { name: "Le Journal", url: "/blog", isInternal: true },
+              { name: "Instagram", url: "#", isInternal: false },
+              { name: "Google", url: "https://share.google/B5UulQr99RYjUFRgt", isInternal: false }
+            ].map(social => (
+              social.isInternal ? (
+                <Link key={social.name} to={social.url} className="text-[10px] uppercase tracking-[0.3em] font-bold hover:text-terracotta transition-colors">{social.name}</Link>
+              ) : (
+                <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="text-[10px] uppercase tracking-[0.3em] font-bold hover:text-terracotta transition-colors">{social.name}</a>
+              )
             ))}
           </div>
         </div>
@@ -693,30 +771,41 @@ export default function App() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   return (
-    <div className="relative">
-      <Navbar onOpenBooking={() => setIsBookingOpen(true)} />
-      <main>
-        <Hero onOpenBooking={() => setIsBookingOpen(true)} />
-        <Presentation />
-        <Services onOpenBooking={() => setIsBookingOpen(true)} />
-        <Benefits />
-        <Contact onOpenBooking={() => setIsBookingOpen(true)} />
-      </main>
-      <Footer />
-      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
-      
-      {/* Floating WhatsApp Button */}
-      <motion.a 
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        href="https://wa.me/33683571784" 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="fixed bottom-12 right-12 z-40 w-16 h-16 bg-deep-brown text-nude-50 rounded-full flex items-center justify-center shadow-2xl"
-      >
-        <MessageCircle className="w-8 h-8" />
-      </motion.a>
-    </div>
+    <Router>
+      <ScrollToTop />
+      <div className="relative">
+        <Navbar onOpenBooking={() => setIsBookingOpen(true)} />
+        <main>
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={
+              <>
+                <Hero onOpenBooking={() => setIsBookingOpen(true)} />
+                <Presentation />
+                <Services onOpenBooking={() => setIsBookingOpen(true)} />
+                <Benefits />
+                <Contact onOpenBooking={() => setIsBookingOpen(true)} />
+              </>
+            } />
+            <Route path="/a-propos" element={<About />} />
+            <Route path="/blog" element={<Blog />} />
+          </Routes>
+        </main>
+        <Footer />
+        <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
+        
+        {/* Floating WhatsApp Button */}
+        <motion.a 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          href="https://wa.me/33683571784" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="fixed bottom-12 right-12 z-40 w-16 h-16 bg-deep-brown text-nude-50 rounded-full flex items-center justify-center shadow-2xl"
+        >
+          <MessageCircle className="w-8 h-8" />
+        </motion.a>
+      </div>
+    </Router>
   );
 }
