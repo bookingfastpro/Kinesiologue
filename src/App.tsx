@@ -70,7 +70,7 @@ const Navbar = ({ onOpenBooking }: { onOpenBooking: () => void }) => {
   }, [isMobileMenuOpen]);
 
   const navItems = [
-    { name: "Présentation", path: "/#presentation" },
+    { name: "Accueil", path: "/#home" },
     { name: "À Propos", path: "/a-propos" },
     { name: "Le Journal", path: "/blog" },
     { name: "Prestations", path: "/#prestations" },
@@ -767,45 +767,56 @@ const BookingModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   );
 };
 
+const AppContent = ({ onOpenBooking, isBookingOpen, setIsBookingOpen }: { onOpenBooking: () => void, isBookingOpen: boolean, setIsBookingOpen: (val: boolean) => void }) => {
+  const location = useLocation();
+  return (
+    <div className="relative">
+      <Navbar onOpenBooking={onOpenBooking} />
+      <main key={location.pathname}>
+        <Routes location={location}>
+          <Route path="/" element={
+            <>
+              <Hero onOpenBooking={onOpenBooking} />
+              <Presentation />
+              <Services onOpenBooking={onOpenBooking} />
+              <Benefits />
+              <Contact onOpenBooking={onOpenBooking} />
+            </>
+          } />
+          <Route path="/a-propos" element={<About />} />
+          <Route path="/blog" element={<Blog />} />
+        </Routes>
+      </main>
+      <Footer />
+      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
+      
+      {/* Floating WhatsApp Button */}
+      <motion.a 
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        href="https://wa.me/33683571784" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="fixed bottom-12 right-12 z-40 w-16 h-16 bg-deep-brown text-nude-50 rounded-full flex items-center justify-center shadow-2xl"
+      >
+        <MessageCircle className="w-8 h-8" />
+      </motion.a>
+    </div>
+  );
+};
+
 export default function App() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   return (
     <Router>
       <ScrollToTop />
-      <div className="relative">
-        <Navbar onOpenBooking={() => setIsBookingOpen(true)} />
-        <main>
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={
-              <>
-                <Hero onOpenBooking={() => setIsBookingOpen(true)} />
-                <Presentation />
-                <Services onOpenBooking={() => setIsBookingOpen(true)} />
-                <Benefits />
-                <Contact onOpenBooking={() => setIsBookingOpen(true)} />
-              </>
-            } />
-            <Route path="/a-propos" element={<About />} />
-            <Route path="/blog" element={<Blog />} />
-          </Routes>
-        </main>
-        <Footer />
-        <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
-        
-        {/* Floating WhatsApp Button */}
-        <motion.a 
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          whileHover={{ scale: 1.1 }}
-          href="https://wa.me/33683571784" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="fixed bottom-12 right-12 z-40 w-16 h-16 bg-deep-brown text-nude-50 rounded-full flex items-center justify-center shadow-2xl"
-        >
-          <MessageCircle className="w-8 h-8" />
-        </motion.a>
-      </div>
+      <AppContent 
+        onOpenBooking={() => setIsBookingOpen(true)} 
+        isBookingOpen={isBookingOpen}
+        setIsBookingOpen={setIsBookingOpen}
+      />
     </Router>
   );
 }
