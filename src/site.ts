@@ -8,7 +8,7 @@
 // avec la variable d'environnement SITE_URL (ex: SITE_URL=https://mon-domaine.fr npm run build).
 // (la valeur est injectée par vite.config.ts au moment du build)
 export const SITE_URL: string = (
-  process.env.SITE_URL || "https://www.ines-mallaroni-kinesiologue.fr"
+  process.env.SITE_URL || "https://kinesiologue-corse.com"
 ).replace(/\/+$/, "");
 
 export const SITE = {

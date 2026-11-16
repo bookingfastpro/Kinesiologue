@@ -2,7 +2,7 @@
 FROM node:20-slim AS build
 WORKDIR /app
 # URL publique du site, utilisée pour les balises canonical, le sitemap et robots.txt
-ARG SITE_URL=https://www.ines-mallaroni-kinesiologue.fr
+ARG SITE_URL=https://kinesiologue-corse.com
 ENV SITE_URL=$SITE_URL
 COPY package*.json ./
 RUN npm ci

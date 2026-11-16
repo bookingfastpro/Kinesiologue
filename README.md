@@ -15,14 +15,14 @@ Variables d'environnement (production) :
 
 | Variable         | Rôle                                                                 |
 | ---------------- | -------------------------------------------------------------------- |
-| `SITE_URL`       | **Domaine public du site** (ex. `https://www.mon-domaine.fr`). Utilisé pour les URL canoniques, le sitemap, robots.txt et les données structurées. À définir **au moment du build**. |
+| `SITE_URL`       | **Domaine public du site** (ex. `https://kinesiologue-corse.com`, valeur par défaut). Utilisé pour les URL canoniques, le sitemap, robots.txt et les données structurées. À définir **au moment du build**. |
 | `ADMIN_PASSWORD` | Mot de passe de l'espace `/admin` (gestion du journal). **Obligatoire en production.** |
 | `PORT`           | Port du serveur Express (3000 par défaut).                            |
 
 Avec Docker (nginx, site statique sans API d'administration) :
 
 ```bash
-docker build --build-arg SITE_URL=https://www.mon-domaine.fr -t kinesiologue .
+docker build --build-arg SITE_URL=https://kinesiologue-corse.com -t kinesiologue .
 ```
 
 ## Modifier les informations
