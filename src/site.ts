@@ -31,9 +31,8 @@ export const SITE = {
     region: "Corse-du-Sud",
     country: "FR",
   },
-  mapsUrl:
-    "https://www.google.com/maps/search/?api=1&query=" +
-    encodeURIComponent("41 rue Maréchal Juin, 20137 Porto-Vecchio"),
+  // Fiche Google Maps du cabinet (ouverte depuis l'adresse affichée sur le site).
+  mapsUrl: "https://maps.app.goo.gl/nKMau8Fs488gnWQK7",
   areaServed: [
     "Porto-Vecchio",
     "Lecci",
@@ -177,7 +176,7 @@ export const businessJsonLd = () => ({
   hasMap: SITE.mapsUrl,
   areaServed: SITE.areaServed.map((name) => ({ "@type": "Place", name })),
   founder: { "@id": personId },
-  sameAs: [SITE.googleUrl, SITE.instagramUrl].filter(Boolean),
+  sameAs: [SITE.mapsUrl, SITE.googleUrl, SITE.instagramUrl].filter(Boolean),
   potentialAction: {
     "@type": "ReserveAction",
     target: SITE.bookingUrl,
