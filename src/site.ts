@@ -19,7 +19,7 @@ export const SITE = {
   phoneDisplay: "06 83 57 17 84",
   phoneE164: "+33683571784",
   whatsappUrl: "https://wa.me/33683571784",
-  googleUrl: "https://share.google/B5UulQr99RYjUFRgt",
+  googleUrl: "https://share.google/RrxcEVKdg6krxgg9L",
   // Ajoutez ici l'URL de votre compte Instagram pour l'afficher sur le site.
   instagramUrl: "",
   bookingUrl: "https://bookingfast.pro/booking/bd1f360d-fa34-4604-a48c-6017f41eb6ef",
